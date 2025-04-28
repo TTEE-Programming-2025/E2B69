@@ -3,14 +3,15 @@
 
 int main(void)
 {
-	int i,password;
-	
-	printf("+----------+---------+---------+----------+----------+");//個人風格畫面 
-	printf("\n| 出生日期 |  性 別  |  年 齡  | 就讀學校 |   姓 名  |");
-	printf("\n+----------+---------+---------+----------+----------+");
-	printf("\n| 92.12.13 |  男 性  |  21 歲  | 大同大學 |  曾冠霖  |");  
-	printf("\n+----------+---------+---------+----------+----------+");
-	printf(" \n");
+    int i, password;
+
+  
+    printf("+----------+---------+---------+----------+----------+\n");  // 個人風格畫面
+    printf("| 出生日期 |  性 別  |  年 齡  | 就讀學校 |   姓 名  |\n");
+    printf("+----------+---------+---------+----------+----------+\n");
+    printf("| 92.12.13 |  男 性  |  21 歲  | 大同大學 |  曾冠霖  |\n");
+    printf("+----------+---------+---------+----------+----------+\n\n");
+    printf(" \n");
 	printf("\n班號:\n");
 	printf(" \n");
 	puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
@@ -36,30 +37,40 @@ int main(void)
     puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 	puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
 	printf(" \n");
-	for (i=0;i<3;i++) 
-	{
-        printf("請輸入密碼: ");
+	
+    for (i = 0; i < 3; i++) 
+    {
+        printf("請輸入密碼：");
         scanf("%d", &password);
-        
-        if(password==2025) 
-		{
-            printf("密碼正確！進入下一步。\n");
+
+        if (password == 2025) 
+        {
+            printf("密碼正確！\n");
             system("pause");
             system("cls");
             break;
         } 
-		else
-		{
+        else 
+        {
             printf("密碼錯誤！\n");
         }
-        if(i==2)
+
+        if (i == 2) 
         {
-        	printf("錯誤三次，程式結束！\n");
-        	system("pause");
-        	return 0;
-		}
+            printf("錯誤三次，程式結束！\n");
+            system("pause");
+            return 0;
+        }
     }
-    
-	system("pause");
-	return 0;
+
+
+    printf("--------------------------\n");    // 顯示主選單
+    printf("| a. 畫出直角三角形       |\n");
+    printf("| b. 顯示乘法表           |\n");
+    printf("| c. 結束                 |\n");
+    printf("--------------------------\n");
+
+    system("pause");
+    return 0;
 }
+
