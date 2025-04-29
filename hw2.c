@@ -1,13 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#include<conio.h>
 
 int main(void)
 {
-    int i, password;
+    int i,j, password;
+    char select;
+    char ch;
+    int n;
+    char confirm;
 
-  
-    printf("+----------+---------+---------+----------+----------+\n");  // 個人風格畫面
+    printf("+----------+---------+---------+----------+----------+\n");
     printf("| 出生日期 |  性 別  |  年 齡  | 就讀學校 |   姓 名  |\n");
     printf("+----------+---------+---------+----------+----------+\n");
     printf("| 92.12.13 |  男 性  |  21 歲  | 大同大學 |  曾冠霖  |\n");
@@ -41,12 +44,12 @@ int main(void)
 	
     for (i = 0; i < 3; i++) 
     {
-        printf("請輸入密碼：");
+        printf("請輸入四位數密碼：");
         scanf("%d", &password);
 
         if (password == 2025) 
         {
-            printf("密碼正確！\n");
+            printf("密碼正確！進入下一步。\n");
             system("pause");
             system("cls");
             break;
@@ -64,14 +67,102 @@ int main(void)
         }
     }
 
+    do
+    {
+        printf("--------------------------\n");
+        printf("| a. 畫出直角三角形       |\n");
+        printf("| b. 顯示乘法表           |\n");
+        printf("| c. 結束                 |\n");
+        printf("--------------------------\n");
+        printf("請選擇功能：");
+        scanf(" %c", &select);
 
-    printf("--------------------------\n");    // 顯示主選單
-    printf("| a. 畫出直角三角形       |\n");
-    printf("| b. 顯示乘法表           |\n");
-    printf("| c. 結束                 |\n");
-    printf("--------------------------\n");
+        if(select == 'a' || select == 'A')
+        {
+            system("cls");
+            while(1)
+            {
+                printf("請輸入字元 (a~n)：");
+                scanf(" %c", &ch);
+                
+                if(ch >= 'a' && ch <= 'n')
+                {
+                    int height = ch - 'a' + 1;
+                    for (i = 0; i < height; i++) 
+                    {
+                        for ( j = 0; j <= i; j++) 
+                        {
+                            printf("%c", ch - j);
+                        }
+                        printf("\n");
+                    }
+                    printf("按任意鍵回到主選單...\n");
+                    getch();
+                    system("cls");
+                    break;
+                }
+                else
+                {
+                    printf("輸入錯誤！請重新輸入。\n");
+                }
+            }
+        }
+        else if(select == 'b' || select == 'B')
+        {
+            system("cls");
+            while(1)
+            {
+                printf("請輸入1到9的整數：");
+                scanf("%d", &n);
 
-    system("pause");
+                if(n >= 1 && n <= 9)
+                {
+                    for( i = 1; i <= n; i++)
+                    {
+                        for( j = 1; j <= n; j++)
+                        {
+                            printf("%2d*%2d=%2d ", i, j, i*j);
+                        }
+                        printf("\n");
+                    }
+                    printf("按任意鍵回到主選單...\n");
+                    getch();
+                    system("cls");
+                    break;
+                }
+                else
+                {
+                    printf("輸入錯誤！請重新輸入。\n");
+                }
+            }
+        }
+        else if(select == 'c' || select == 'C')
+        {
+            printf("Continue? (y/n)：");
+            scanf(" %c", &confirm);
+
+            if(confirm == 'y' || confirm == 'Y')
+            {
+                system("cls");
+                continue;
+            }
+            else if(confirm == 'n' || confirm == 'N')
+            {
+                printf("程式結束，掰掰～\n");
+                system("pause");
+                return 0;
+            }
+            else
+            {
+                printf("輸入錯誤，請重新選擇功能！\n");
+            }
+        }
+        else
+        {
+            printf("輸入錯誤！請重新選擇功能。\n");
+        }
+    } while(1);
+
     return 0;
 }
 
