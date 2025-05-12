@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-// 初始化 9x9 座位表，'-' 表示空位，'*' 表示已被預定，'@' 表示已安排
+// 初始化 9x9 座位表，'-' 表示空位，'*' 表示已被預定，'@' 表示臨時安排
 char seats[9][9];
 int justArranged = 0; // 標誌：是否剛完成座位安排
 
@@ -68,8 +68,6 @@ void displaySeats()
         {
             if (justArranged && seats[i][j] == '@') {
                 printf("@"); // 剛安排時顯示 '@'
-            } else if (seats[i][j] == '@') {
-                printf("*"); // 非剛安排時 '@' 顯示為 '*'
             } else {
                 printf("%c", seats[i][j]); // 顯示 '-' 或 '*'
             }
@@ -111,7 +109,7 @@ void arrangeSeats()
                     if (seats[i][j + k] != '-') free = 0;
                 if (free) {
                     for (k = 0; k < num; k++)
-                        seats[i][j + k] = '@'; // 直接標記為 '@'
+                        seats[i][j + k] = '@'; // 臨時標記為 '@'
                     arranged = 1;
                     break;
                 }
@@ -135,7 +133,7 @@ void arrangeSeats()
                 for (j = 0; j < 8; j++) {
                     if (seats[i][j] == '-' && seats[i][j + 1] == '-' && 
                         seats[i + 1][j] == '-' && seats[i + 1][j + 1] == '-') {
-                        seats[i][j] = seats[i][j + 1] = seats[i + 1][j] = seats[i][j + 1] = '@';
+                        seats[i][j] = seats[i][j + 1] = seats[i + 1][j] = seats[i + 1][j + 1] = '@';
                         arranged = 1;
                         break;
                     }
@@ -151,13 +149,17 @@ void arrangeSeats()
         printf("Satisfy with this arrangement? (y/n)：");
         scanf(" %c", &choice);
         if (choice == 'y' || choice == 'Y') {
+            // 將 '@' 轉為 '*'，紀錄為已預定
+            for (i = 0; i < 9; i++)
+                for (j = 0; j < 9; j++)
+                    if (seats[i][j] == '@') seats[i][j] = '*';
         } else {
             // 將 '@' 恢復為 '-'
             for (i = 0; i < 9; i++)
                 for (j = 0; j < 9; j++)
                     if (seats[i][j] == '@') seats[i][j] = '-';
         }
-        justArranged = 0; // 重置標誌，確保下次顯示 '@' 轉為 '*'
+        justArranged = 0; // 重置標誌，確保下次顯示使用 '*'
     } else {
         printf("Unable to arrange consecutive seats！\n");
     }
@@ -174,10 +176,12 @@ void chooseSeats()
     }
     row--; col--; // 轉換為陣列索引
     if (seats[row][col] == '-') {
-        seats[row][col] = '@'; // 標記為 '@'
+        seats[row][col] = '@'; // 臨時標記為 '@'
         justArranged = 1; // 設置標誌，表示剛安排
         displaySeats();
-        justArranged = 0; // 重置標誌，確保下次顯示 '@' 轉為 '*'
+        // 立即將 '@' 轉為 '*'，紀錄為已預定
+        seats[row][col] = '*';
+        justArranged = 0; // 重置標誌，確保下次顯示使用 '*'
     } else {
         printf("The seat has been reserved！\n");
     }
@@ -197,9 +201,9 @@ int main()
         } else {
             attempts++;
             if (attempts < 3) {
-                printf("Error！Please check your password and try again ：", 3 - attempts);
+                printf("Error！Please check your password and try again (%d attempts left)：", 3 - attempts);
             } else {
-                printf("Too many incorrect attempts！System END.\n");
+                printf("Over 3 attempts! System END.\n");
                 return 1;
             }
         }
