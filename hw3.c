@@ -4,7 +4,7 @@
 
 // 初始化 9x9 座位表，'-' 表示空位，'*' 表示已被預定，'@' 表示已安排
 char seats[9][9];
-int i,j,k;
+int justArranged = 0; // 標誌：是否剛完成座位安排
 
 // 顯示個人風格的畫面
 void displayWelcome() 
@@ -39,8 +39,9 @@ void displayWelcome()
 // 初始化座位表並隨機生成10個已預定座位
 void initSeats() 
 {
+    int i, j;
     for (i = 0; i < 9; i++)
-        for ( j = 0; j < 9; j++)
+        for (j = 0; j < 9; j++)
             seats[i][j] = '-';
     
     srand(time(NULL));
@@ -55,15 +56,24 @@ void initSeats()
     }
 }
 
-// 顯示座位表，將 '@' 顯示為 '*'
+// 顯示座位表
 void displaySeats() 
 {
+    int i, j;
     printf("  123456789\n");
-    for ( i = 8; i >= 0; i--) 
+    for (i = 8; i >= 0; i--) 
     {
         printf("%d ", i + 1);
-        for ( j = 0; j < 9; j++)
-            printf("%c", seats[i][j] == '@' ? '*' : seats[i][j]);
+        for (j = 0; j < 9; j++)
+        {
+            if (justArranged && seats[i][j] == '@') {
+                printf("@"); // 剛安排時顯示 '@'
+            } else if (seats[i][j] == '@') {
+                printf("*"); // 非剛安排時 '@' 顯示為 '*'
+            } else {
+                printf("%c", seats[i][j]); // 顯示 '-' 或 '*'
+            }
+        }
         printf("\n");
     }
 }
@@ -84,24 +94,24 @@ void displayMenu()
 // 系統安排座位
 void arrangeSeats() 
 {
-    int num;
+    int num, i, j, k;
     printf("How many seats do you need (1-4)?：");
     scanf("%d", &num);
     if (num < 1 || num > 4) {
-        printf("Unvalible number of seats！\n");
+        printf("Invalid number of seats！\n");
         return;
     }
     
     int arranged = 0;
     if (num <= 3) {
-        for ( i = 0; i < 9 && !arranged; i++) {
-            for ( j = 0; j <= 9 - num; j++) {
+        for (i = 0; i < 9 && !arranged; i++) {
+            for (j = 0; j <= 9 - num; j++) {
                 int free = 1;
                 for (k = 0; k < num; k++)
                     if (seats[i][j + k] != '-') free = 0;
                 if (free) {
-                    for ( k = 0; k < num; k++)
-                        seats[i][j + k] = '0';
+                    for (k = 0; k < num; k++)
+                        seats[i][j + k] = '@'; // 直接標記為 '@'
                     arranged = 1;
                     break;
                 }
@@ -109,11 +119,11 @@ void arrangeSeats()
         }
     } else { // num == 4
         // 先嘗試同一行
-        for ( i = 0; i < 9 && !arranged; i++) {
+        for (i = 0; i < 9 && !arranged; i++) {
             for (j = 0; j <= 5; j++) {
                 if (seats[i][j] == '-' && seats[i][j + 1] == '-' && 
                     seats[i][j + 2] == '-' && seats[i][j + 3] == '-') {
-                    seats[i][j] = seats[i][j + 1] = seats[i][j + 2] = seats[i][j + 3] = '0';
+                    seats[i][j] = seats[i][j + 1] = seats[i][j + 2] = seats[i][j + 3] = '@';
                     arranged = 1;
                     break;
                 }
@@ -125,7 +135,7 @@ void arrangeSeats()
                 for (j = 0; j < 8; j++) {
                     if (seats[i][j] == '-' && seats[i][j + 1] == '-' && 
                         seats[i + 1][j] == '-' && seats[i + 1][j + 1] == '-') {
-                        seats[i][j] = seats[i][j + 1] = seats[i + 1][j] = seats[i + 1][j + 1] = '0';
+                        seats[i][j] = seats[i][j + 1] = seats[i + 1][j] = seats[i][j + 1] = '@';
                         arranged = 1;
                         break;
                     }
@@ -135,21 +145,19 @@ void arrangeSeats()
     }
     
     if (arranged) {
+        justArranged = 1; // 設置標誌，表示剛安排
         displaySeats();
         char choice;
         printf("Satisfy with this arrangement? (y/n)：");
         scanf(" %c", &choice);
-        if (choice == 'y') {
-            // 將 '0' 改為 '@'
+        if (choice == 'y' || choice == 'Y') {
+        } else {
+            // 將 '@' 恢復為 '-'
             for (i = 0; i < 9; i++)
                 for (j = 0; j < 9; j++)
-                    if (seats[i][j] == '0') seats[i][j] = '@';
-        } else {
-            // 將 '0' 恢復為 '-'
-            for (i = 0; i < 9; i++)
-                for ( j = 0; j < 9; j++)
-                    if (seats[i][j] == '0') seats[i][j] = '-';
+                    if (seats[i][j] == '@') seats[i][j] = '-';
         }
+        justArranged = 0; // 重置標誌，確保下次顯示 '@' 轉為 '*'
     } else {
         printf("Unable to arrange consecutive seats！\n");
     }
@@ -166,8 +174,10 @@ void chooseSeats()
     }
     row--; col--; // 轉換為陣列索引
     if (seats[row][col] == '-') {
-        seats[row][col] = '@'; // 改為 '@' 表示已安排
+        seats[row][col] = '@'; // 標記為 '@'
+        justArranged = 1; // 設置標誌，表示剛安排
         displaySeats();
+        justArranged = 0; // 重置標誌，確保下次顯示 '@' 轉為 '*'
     } else {
         printf("The seat has been reserved！\n");
     }
@@ -175,9 +185,9 @@ void chooseSeats()
 
 int main() 
 {
-    // 1. 密碼驗證，限制三次
-    int password;
-    int attempts = 0;
+    // 密碼驗證，限制三次
+    int password, attempts;
+    attempts = 0;
     displayWelcome();
     while (attempts < 3) {
         scanf("%d", &password);
@@ -187,9 +197,9 @@ int main()
         } else {
             attempts++;
             if (attempts < 3) {
-                printf("Error！Please check your password and try again (%d attempts left)：", 3 - attempts);
+                printf("Error！Please check your password and try again ：", 3 - attempts);
             } else {
-                printf("Too many incorrect attempts！Program terminated.\n");
+                printf("Too many incorrect attempts！System END.\n");
                 return 1;
             }
         }
@@ -216,10 +226,10 @@ int main()
             case 'd': // 退出選項
                 printf("Continue? (y/n)：");
                 scanf(" %c", &choice);
-                if (choice == 'n') return 0;
+                if (choice == 'n' || choice == 'N') return 0;
                 break;
             default:
-                printf("Unvalible Choice！\n");
+                printf("Invalid Choice！\n");
         }
         printf("Press Enter to Continue...");
         getchar(); getchar(); // 等待使用者輸入
