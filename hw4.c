@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main (void)
-{
-	int a,i;
-	
+void welcome() {
 	printf("班號:\n");
     puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaa aaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa");
@@ -27,34 +24,48 @@ int main (void)
     puts("aaaaaaaaaaaa aa   a   a   a   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aa   aa   aaaaaaaaaaaaaaaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaa");
     puts("aaaaaaaaaaaaaaaa aaa aaa aaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
-    printf(" \n");
-    for (i = 0; i < 3; i++) 
-    {
-        printf("請輸入四位數密碼：");
-        scanf("%d", &a);
+    printf("Please enter the password: ");
+}
 
-        if (a==2025) 
-        {
-            printf("密碼正確！進入主選單。\n");
+void showMenu() {
+    printf("\n------------[Grade System]----------\n");
+    printf("|  a. Enter student grades         |\n");
+    printf("|  b. Display student grades       |\n");
+    printf("|  c. Search for student grades    |\n");
+    printf("|  d. Grade ranking                |\n");
+    printf("|  e. Exit system                  |\n");
+    printf("------------------------------------\n");
+    printf("Your choice: ");
+}
+
+int main() 
+{
+    int pwd, i = 0;
+    welcome();
+
+    for ( i = 0; i < 3; i++) 
+	{
+        scanf("%d", &pwd);
+
+        if (pwd == 2025) {
+            printf("Correct! Entering menu...\n");
             system("pause");
             system("cls");
-            break; // 正確就跳出密碼驗證
-        }
-        else
-        {
-            printf("密碼錯誤！\n");
+            break;
+        } else {
+            printf("Incorrect password!\n");
         }
 
-        if (i == 2)
-        {
-            printf("錯誤三次，程式結束！\n");
+        if (i == 2) {
+            printf("Too many incorrect attempts. Exiting...\n");
             system("pause");
-            return 0; // 錯誤超過次數，直接結束程式
+            return 0;
         }
     }
     
-    system("pause");
-    return 0;
- } 
-    
+	char choice;
+    showMenu();
+
+}
+
+
