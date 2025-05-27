@@ -4,10 +4,10 @@
 
 /* 定義學生結構 */
 struct Student {
-    int id;
-    char name[20];
-    int scores[3];
-    float average;
+    int id;           // 6位學號
+    char name[20];    // 姓名
+    int scores[3];    // 數學、物理、英文成績
+    float average;    // 平均成績
 };
 
 /* 顯示個人風格畫面 */
@@ -31,11 +31,7 @@ void showWelcome()
     puts("aaaaaaaa a aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaa0aaaaaaaaa aaaa aaa aaa aaaaaaaaaaaa a   aaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaa aaaaaa");
     puts("aaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   aaaaaaaaaaaaaa aaaaaaaaaaaa aa aaaaa   aaaaaaaaaaaaaaaaaaaaaa   aaaaa");
     puts("aaaaaaaaaa a aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aa aaaaaaaaaaa   aaaaaaaaaaaaa   aaaaa aaaaaaaaaaaaaaaaaaaaaa aa aaaaa");
-    puts("aaaaaaaaaaa   aa aaa aaa aaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   aa aaaa aaa aaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaaaaaaaaaa   aaaaaaa");
-    puts("aaaaaaaaaaaa aa   a   a   a   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aa   aa   aaaaaaaaaaaaaaaaaaaaaa   aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaa");
-    puts("aaaaaaaaaaaaaaaa aaa aaa aaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    puts("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+    puts("aaaaaaaaaaa   aa aaa aaa aaa a a aaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaa");
     printf("\nPlease enter the 4-digit password: ");
 }
 
@@ -53,7 +49,19 @@ void showMenu()
     printf("Please enter your choice: ");
 }
 
-/* 輸入學生成績，支援5-10名學生 */
+/* 檢查學號是否唯一 */
+int isUniqueId(struct Student *students, int numStudents, int id) 
+{
+    int i;
+    for (i = 0; i < numStudents; i++) {
+        if (students[i].id == id) {
+            return 0; // 不唯一
+        }
+    }
+    return 1; // 唯一
+}
+
+/* 輸入學生成績 */
 struct Student* enterGrades(int *numStudents) 
 {
     int n, i, j;
@@ -61,32 +69,34 @@ struct Student* enterGrades(int *numStudents)
     printf("Enter the number of students (5-10): ");
     scanf("%d", &n);
     if (n < 5 || n > 10) {
-        printf("Invalid number of students! Must be 5-10.\n");
+        printf("Error: Number of students must be between 5 and 10.\n");
         return NULL;
     }
     *numStudents = n;
 
-    /* 動態分配學生陣列 */
+    /* 動態分配記憶體 */
     struct Student *students = (struct Student*)malloc(n * sizeof(struct Student));
     if (students == NULL) {
-        printf("Memory allocation failed!\n");
+        printf("Error: Memory allocation failed!\n");
         return NULL;
     }
 
-    /* 輸入每個學生的資料 */
+    /* 輸入學生資料 */
     for (i = 0; i < n; i++) {
         int id;
         do {
             printf("Enter student %d's ID (6-digit): ", i + 1);
             scanf("%d", &id);
             if (id < 100000 || id > 999999) {
-                printf("Invalid ID! Must be 6-digit (100000-999999).\n");
+                printf("Error: ID must be a 6-digit number (100000-999999).\n");
+            } else if (!isUniqueId(students, i, id)) {
+                printf("Error: ID already exists! Try another ID.\n");
             }
-        } while (id < 100000 || id > 999999);
+        } while (id < 100000 || id > 999999 || !isUniqueId(students, i, id));
         students[i].id = id;
 
-        printf("Enter student %d's name: ", i + 1);
-        scanf("%s", students[i].name);
+        printf("Enter student %d's name (up to 19 chars): ", i + 1);
+        scanf("%19s", students[i].name);
 
         printf("Enter Math, Physics, English scores (0-100) for student %d: ", i + 1);
         float sum = 0;
@@ -95,7 +105,7 @@ struct Student* enterGrades(int *numStudents)
             do {
                 scanf("%d", &score);
                 if (score < 0 || score > 100) {
-                    printf("Invalid score! Enter score %d (0-100): ", j + 1);
+                    printf("Error: Score %d must be between 0 and 100: ", j + 1);
                 }
             } while (score < 0 || score > 100);
             students[i].scores[j] = score;
@@ -116,19 +126,20 @@ void displayGrades(struct Student *students, int numStudents)
         printf("No student data available!\n");
         return;
     }
+    printf("==============================================================\n");
     printf("Student Grades:\n");
-    printf("----------------------------------------\n");
-    printf("%-15s %-8s %-6s %-8s %-8s %-7s\n", "Name", "ID", "Math", "Physics", "English", "Average");
-    printf("----------------------------------------\n");
+    printf("--------------------------------------------------------------\n");
+    printf("%-20s %-10s %-8s %-10s %-10s %-8s\n", "Name", "ID", "Math", "Physics", "English", "Average");
+    printf("--------------------------------------------------------------\n");
     for (i = 0; i < numStudents; i++) {
-        printf("%-15s %06d %-6d %-8d %-8d %-7.1f\n",
+        printf("%-20s %06d %-8d %-10d %-10d %-8.1f\n",
                students[i].name, students[i].id, students[i].scores[0],
                students[i].scores[1], students[i].scores[2], students[i].average);
     }
-    printf("----------------------------------------\n");
+    printf("==============================================================\n");
 }
 
-/* 按姓名查詢學生成績 */
+/* 按姓名查詢學生成績，顯示所有匹配結果 */
 void searchGrades(struct Student *students, int numStudents) 
 {
     char searchName[20];
@@ -139,20 +150,21 @@ void searchGrades(struct Student *students, int numStudents)
         return;
     }
     printf("Enter student name to search: ");
-    scanf("%s", searchName);
+    scanf("%19s", searchName);
+    printf("==============================================================\n");
     printf("Search Results:\n");
-    printf("----------------------------------------\n");
-    printf("%-15s %-8s %-6s %-8s %-8s %-7s\n", "Name", "ID", "Math", "Physics", "English", "Average");
-    printf("----------------------------------------\n");
+    printf("--------------------------------------------------------------\n");
+    printf("%-20s %-10s %-8s %-10s %-10s %-8s\n", "Name", "ID", "Math", "Physics", "English", "Average");
+    printf("--------------------------------------------------------------\n");
     for (i = 0; i < numStudents; i++) {
         if (strcmp(students[i].name, searchName) == 0) {
-            printf("%-15s %06d %-6d %-8d %-8d %-7.1f\n",
+            printf("%-20s %06d %-8d %-10d %-10d %-8.1f\n",
                    students[i].name, students[i].id, students[i].scores[0],
                    students[i].scores[1], students[i].scores[2], students[i].average);
             found = 1;
         }
     }
-    printf("----------------------------------------\n");
+    printf("==============================================================\n");
     if (!found) {
         printf("Student with name %s not found!\n", searchName);
     }
@@ -170,7 +182,7 @@ void gradeRanking(struct Student *students, int numStudents)
     /* 複製學生陣列，避免修改原始資料 */
     struct Student *sorted = (struct Student*)malloc(numStudents * sizeof(struct Student));
     if (sorted == NULL) {
-        printf("Memory allocation failed!\n");
+        printf("Error: Memory allocation failed!\n");
         return;
     }
     for (i = 0; i < numStudents; i++) {
@@ -187,14 +199,15 @@ void gradeRanking(struct Student *students, int numStudents)
         }
     }
     /* 顯示排名 */
+    printf("==============================================================\n");
     printf("Grade Ranking:\n");
-    printf("------------------------------------\n");
-    printf("%-5s %-15s %-8s %-7s\n", "Rank", "Name", "ID", "Average");
-    printf("------------------------------------\n");
+    printf("--------------------------------------------------------------\n");
+    printf("%-5s %-20s %-10s %-8s\n", "Rank", "Name", "ID", "Average");
+    printf("--------------------------------------------------------------\n");
     for (i = 0; i < numStudents; i++) {
-        printf("%-5d %-15s %06d %-7.1f\n", i + 1, sorted[i].name, sorted[i].id, sorted[i].average);
+        printf("%-5d %-20s %06d %-8.1f\n", i + 1, sorted[i].name, sorted[i].id, sorted[i].average);
     }
-    printf("------------------------------------\n");
+    printf("==============================================================\n");
     free(sorted);
 }
 
@@ -216,7 +229,7 @@ int main()
         } else {
             attempts++;
             if (attempts < 3) {
-                printf("Error! Please try again (%d attempts left): ", 3 - attempts);
+                printf("Error: Please try again (%d attempts left): ", 3 - attempts);
             } else {
                 printf("Too many incorrect attempts! Program terminated.\n");
                 return 1;
@@ -267,3 +280,6 @@ int main()
     if (students != NULL) free(students);
     return 0;
 }
+//完成這次作業讓我收穫良多。從階段1的基礎框架到階段4的完善版本，我逐步實現了密碼驗證、選單操作、成績輸入、顯示、查詢和排名功能，深入理解了 C 語言的應用。
+//這次作業讓我學會使用結構（struct Student）組織學號、姓名和成績資料，並透過動態記憶體分配（malloc 和 free）支援靈活的學生數量。從階段2開始，我加入輸入驗證，確保學號為6位且成績在0-100之間；到階段4，更實現學號唯一性檢查，提升程式穩定性。設計主選單和表格顯示讓我體會到模組化程式和美觀輸出的重要性。實作冒泡排序完成排名功能，則讓我初步掌握演算法的應用。
+//過程中，解決編譯錯誤（如 ld returned 1 exit status）讓我學會檢查環境問題，例如關閉運行中的程式或使用 ASCII 路徑。未來，我希望優化排序效率並加入成績修改功能。這次作業不僅提升了我的程式設計能力，也讓我對使用者體驗和程式健壯性有了更深的認識。
