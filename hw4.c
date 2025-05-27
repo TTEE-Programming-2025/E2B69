@@ -4,10 +4,10 @@
 
 /* 定義學生結構 */
 struct Student {
-    int id;           // 6位學號
-    char name[20];    // 姓名
-    int scores[3];    // 數學、物理、英文成績
-    float average;    // 平均成績
+    int id;
+    char name[20];
+    int scores[3];
+    float average;
 };
 
 /* 顯示個人風格畫面 */
@@ -107,7 +107,7 @@ struct Student* enterGrades(int *numStudents)
     return students;
 }
 
-/* 顯示所有學生成績 */
+/* 顯示所有學生成績，表格格式 */
 void displayGrades(struct Student *students, int numStudents) 
 {
     int i;
@@ -117,11 +117,15 @@ void displayGrades(struct Student *students, int numStudents)
         return;
     }
     printf("Student Grades:\n");
+    printf("----------------------------------------\n");
+    printf("%-15s %-8s %-6s %-8s %-8s %-7s\n", "Name", "ID", "Math", "Physics", "English", "Average");
+    printf("----------------------------------------\n");
     for (i = 0; i < numStudents; i++) {
-        printf("Name: %s, ID: %06d, Math: %d, Physics: %d, English: %d, Average: %.1f\n",
+        printf("%-15s %06d %-6d %-8d %-8d %-7.1f\n",
                students[i].name, students[i].id, students[i].scores[0],
                students[i].scores[1], students[i].scores[2], students[i].average);
     }
+    printf("----------------------------------------\n");
 }
 
 /* 按姓名查詢學生成績 */
@@ -136,18 +140,62 @@ void searchGrades(struct Student *students, int numStudents)
     }
     printf("Enter student name to search: ");
     scanf("%s", searchName);
+    printf("Search Results:\n");
+    printf("----------------------------------------\n");
+    printf("%-15s %-8s %-6s %-8s %-8s %-7s\n", "Name", "ID", "Math", "Physics", "English", "Average");
+    printf("----------------------------------------\n");
     for (i = 0; i < numStudents; i++) {
         if (strcmp(students[i].name, searchName) == 0) {
-            printf("Student found:\n");
-            printf("Name: %s, ID: %06d, Math: %d, Physics: %d, English: %d, Average: %.1f\n",
+            printf("%-15s %06d %-6d %-8d %-8d %-7.1f\n",
                    students[i].name, students[i].id, students[i].scores[0],
                    students[i].scores[1], students[i].scores[2], students[i].average);
             found = 1;
         }
     }
+    printf("----------------------------------------\n");
     if (!found) {
         printf("Student with name %s not found!\n", searchName);
     }
+}
+
+/* 成績排名，按平均成績降序 */
+void gradeRanking(struct Student *students, int numStudents) 
+{
+    int i, j;
+    system("cls");
+    if (students == NULL || numStudents == 0) {
+        printf("No student data available!\n");
+        return;
+    }
+    /* 複製學生陣列，避免修改原始資料 */
+    struct Student *sorted = (struct Student*)malloc(numStudents * sizeof(struct Student));
+    if (sorted == NULL) {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+    for (i = 0; i < numStudents; i++) {
+        sorted[i] = students[i];
+    }
+    /* 冒泡排序，按平均成績降序 */
+    for (i = 0; i < numStudents - 1; i++) {
+        for (j = 0; j < numStudents - i - 1; j++) {
+            if (sorted[j].average < sorted[j + 1].average) {
+                struct Student temp = sorted[j];
+                sorted[j] = sorted[j + 1];
+                sorted[j + 1] = temp;
+            }
+        }
+    }
+    /* 顯示排名 */
+    printf("Grade Ranking:\n");
+    printf("------------------------------------\n");
+    printf("%-5s %-15s %-8s %-7s\n", "Rank", "Name", "ID", "Average");
+    printf("------------------------------------\n");
+    for (i = 0; i < numStudents; i++) {
+        printf("%-5d %-15s %06d %-7.1f\n", i + 1, sorted[i].name, sorted[i].id, sorted[i].average);
+    }
+    printf("------------------------------------\n");
+    free(sorted);
 }
 
 int main() 
@@ -193,9 +241,8 @@ int main()
             case 'c': // 查詢成績
                 searchGrades(students, numStudents);
                 break;
-            case 'd': // 成績排名（尚未實現）
-                system("cls");
-                printf("Ranking function not implemented yet.\n");
+            case 'd': // 成績排名
+                gradeRanking(students, numStudents);
                 break;
             case 'e': // 退出系統
                 system("cls");
